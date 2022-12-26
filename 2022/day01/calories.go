@@ -27,7 +27,7 @@ func SolvePuzzle() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Printf("The answer is: %d", maxCals)
+	fmt.Printf("The answer is: %d\n", maxCals)
 }
 
 // CountMaxCalories returns sum of top leadersCount calories.
