@@ -34,7 +34,7 @@ func TestCalculateTotalScore(t *testing.T) {
 					C Z
 				`),
 			},
-			want: 15,
+			want: 12,
 		},
 		{
 			name: "Example from AOC site without new linen at start and at end",
@@ -43,7 +43,7 @@ func TestCalculateTotalScore(t *testing.T) {
 					B X
 					C Z`),
 			},
-			want: 15,
+			want: 12,
 		},
 	}
 	for _, tt := range tests {

@@ -27,92 +27,93 @@ func SolvePuzzle() {
 	fmt.Printf("The answer is: %d\n", totalScore)
 }
 
-type HandShape string
+type handShape string
 
 const (
-	Rock     HandShape = "Rock"
-	Paper    HandShape = "Paper"
-	Scissors HandShape = "Scissors"
+	rock     handShape = "Rock"
+	paper    handShape = "Paper"
+	scissors handShape = "Scissors"
 )
 
-type GameResult string
+type gameResult string
 
 const (
-	Win  GameResult = "Win"
-	Lost GameResult = "Lost"
-	Draw GameResult = "Draw"
+	win  gameResult = "Win"
+	lost gameResult = "Lost"
+	draw gameResult = "Draw"
 )
 
-var playerFormToEnemyFormResults = map[HandShape]map[HandShape]GameResult{
-	Rock: {
-		Rock:     Draw,
-		Paper:    Lost,
-		Scissors: Win,
+var enemyMoves = map[rune]handShape{
+	'A': rock,
+	'B': paper,
+	'C': scissors,
+}
+
+var playerStrategies = map[rune]gameResult{
+	'X': lost,
+	'Y': draw,
+	'Z': win,
+}
+
+var enemyMoveToGameResult = map[handShape]map[gameResult]handShape{
+	rock: {
+		draw: rock,
+		win:  paper,
+		lost: scissors,
 	},
-	Paper: {
-		Rock:     Win,
-		Paper:    Draw,
-		Scissors: Lost,
+	paper: {
+		draw: paper,
+		win:  scissors,
+		lost: rock,
 	},
-	Scissors: {
-		Rock:     Lost,
-		Paper:    Win,
-		Scissors: Draw,
+	scissors: {
+		draw: scissors,
+		win:  rock,
+		lost: paper,
 	},
 }
 
-var shapePoints = map[HandShape]int{
-	Rock:     1,
-	Paper:    2,
-	Scissors: 3,
+var shapePoints = map[handShape]int{
+	rock:     1,
+	paper:    2,
+	scissors: 3,
 }
 
-var gamePoints = map[GameResult]int{
-	Lost: 0,
-	Draw: 3,
-	Win:  6,
-}
-
-var dictionary = map[rune]HandShape{
-	// enemy
-	'A': Rock,
-	'B': Paper,
-	'C': Scissors,
-	// player
-	'Y': Paper,
-	'X': Rock,
-	'Z': Scissors,
+var gamePoints = map[gameResult]int{
+	lost: 0,
+	draw: 3,
+	win:  6,
 }
 
 func CalculateTotalScore(in io.Reader) (int, error) {
 	scanner := bufio.NewScanner(in)
 
 	totalScore := 0
-	row := 0
+	// row := 0
 	for scanner.Scan() {
 		line := strings.TrimSpace(scanner.Text())
-		row++
+		// row++
 		if line == "" {
 			continue
 		}
 
-		var enemyMove, playerMove rune
-		_, err := fmt.Sscanf(line, "%c %c", &enemyMove, &playerMove)
+		var enemyRecord, playerRecord rune
+		_, err := fmt.Sscanf(line, "%c %c", &enemyRecord, &playerRecord)
 		if err != nil {
 			return 0, err
 		}
 
-		enemyForm := dictionary[enemyMove]
-		playerForm := dictionary[playerMove]
-		gameResultForPlayer := playerFormToEnemyFormResults[playerForm][enemyForm]
+		enemyMove := enemyMoves[enemyRecord]
+		gameResultPlayerWant := playerStrategies[playerRecord]
+		playerMove := enemyMoveToGameResult[enemyMove][gameResultPlayerWant]
 
-		pointsForRound := gamePoints[gameResultForPlayer] + shapePoints[playerForm]
+		pointsForRound := gamePoints[gameResultPlayerWant] + shapePoints[playerMove]
 		totalScore += pointsForRound
 
 		// debug
 		// fmt.Printf("%d. %c%c %s-%s %s. Player got=%d points(game result=%d + shape=%d) for round. Total: %d\n",
-		// 	row, enemyMove, playerMove, enemyForm, playerForm, gameResultForPlayer,
-		// 	pointsForRound, gamePoints[gameResultForPlayer], shapePoints[playerForm],
+		// 	row, enemyRecord, playerRecord, enemyMove, playerMove, gameResultPlayerWant,
+		// 	pointsForRound, gamePoints[gameResultPlayerWant], shapePoints[playerMove],
 		// 	totalScore,
 		// )
 	}
