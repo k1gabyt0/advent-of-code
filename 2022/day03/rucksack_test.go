@@ -8,7 +8,8 @@ import (
 
 func TestReorganizeRucksack(t *testing.T) {
 	type args struct {
-		reader io.Reader
+		reader    io.Reader
+		groupSize int
 	}
 	tests := []struct {
 		name    string
@@ -27,20 +28,22 @@ func TestReorganizeRucksack(t *testing.T) {
 					ttgJtRGJQctTZtZT
 					CrZsJsPPZsGzwwsLwLmpwMDw
 				`),
+				groupSize: 3,
 			},
-			want: 157,
+			want: 70,
 		},
 		{
 			name: "Empty input",
 			args: args{
-				reader: strings.NewReader(``),
+				reader:    strings.NewReader(``),
+				groupSize: 3,
 			},
 			want: 0,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := ReorganizeRucksack(tt.args.reader)
+			got, err := ReorganizeRucksack(tt.args.reader, tt.args.groupSize)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("ReorganizeRucksack() error = %v, wantErr %v", err, tt.wantErr)
 				return
